@@ -8,7 +8,7 @@ public class Cliente {
 	private int id;
 	private String nome;
 	private String numeroDeIdentificacao;
-	private String contato;
+	private String contato; 
 
 	private List<Emprestimo> emprestimosAtivos = new ArrayList<>();
 
@@ -21,6 +21,9 @@ public class Cliente {
 		this.nome = nome;
 		this.numeroDeIdentificacao = numeroDeIdentificacao;
 		this.contato = contato;
+	}
+	public boolean podeRealizarEmprestimo() {
+	    return emprestimosAtivos.size() < 3; // Retorna true se o cliente tiver menos de 3 empréstimos ativos
 	}
 
 	public int getId() {
@@ -47,6 +50,15 @@ public class Cliente {
 		this.contato = contato;
 	}
 
+    
+    public String listarEmprestimos() {
+        StringBuilder sb = new StringBuilder();
+        for (Emprestimo emprestimo : emprestimosAtivos) {
+            sb.append(emprestimo.toString()).append("\n");
+        }
+        return sb.toString();
+    }
+
 	public List<Emprestimo> getEmprestimosAtivos() {
 		return emprestimosAtivos;
 	}
@@ -59,15 +71,11 @@ public class Cliente {
 		emprestimosAtivos.remove(emprestimo);
 	}
 
-	/*public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(
-				"Nome: " + nome + " Numero de identificacao: " + numeroDeIdentificacao + " Contato: " + contato + "\n");
-		for (Emprestimo emprestimos : emprestimosAtivos) {
-			sb.append(emprestimos.getLivro().getTitulo() + " " + emprestimos.getLivro().getAutor() + " "
-					+ emprestimos.getDataRetirada() + " " + emprestimos.getDataDevolucaoPrevista());
-		}
-		
-		return sb.toString();
-	}*/
+	@Override
+	public String toString() {
+	    return "Cliente: " + nome + 
+	           " | ID: " + numeroDeIdentificacao + 
+	           " | Contato: " + contato + 
+	           " | Empréstimos ativos: " + emprestimosAtivos.size();
+	}
 }

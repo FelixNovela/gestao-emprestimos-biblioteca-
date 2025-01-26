@@ -64,13 +64,16 @@ public class Livro {
 		this.estoque += quantidade;
 	}
 
-	public void diminuirEstoque(int quantidade) {
-		if (this.estoque <= 0) {
-			System.out.println("Nao e possivel diminuir estoque.\nQuantidade disponivel " + getEstoque());
+	public boolean diminuirEstoque() {
+		boolean resp = false;
+		if (this.estoque <= 0 ) {
+			System.out.println("Nao e possivel diminuir estoque.Quantidade disponivel " + getEstoque()+"\n");
+			resp = true;
 		} else {
-			this.estoque -= quantidade;
+			this.estoque -= 1;
+			
 		}
-
+		return resp;
 	}
 
 	@Override

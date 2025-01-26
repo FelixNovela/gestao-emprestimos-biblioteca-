@@ -20,11 +20,15 @@ public class Emprestimo {
 
 	}
 
-	public Emprestimo(int id, Cliente cliente, LocalDate dataRetirada, LocalDate dataDevolucaoPrevista) {
+	public Emprestimo(int id, Cliente cliente, Livro livro, LocalDate dataRetirada, LocalDate dataDevolucaoPrevista) {
+
 		this.id = id;
 		this.cliente = cliente;
 		this.dataRetirada = dataRetirada;
 		this.dataDevolucaoPrevista = dataDevolucaoPrevista;
+		this.statusEmprestimo = statusEmprestimo.ATIVO;
+		this.realizarEmprestimo(livro);
+
 	}
 
 	public int getId() {
@@ -52,7 +56,8 @@ public class Emprestimo {
 	}
 
 	public LocalDate getDataDevolucaoPrevista() {
-		return dataDevolucaoPrevista;
+
+		return this.dataDevolucaoPrevista;
 	}
 
 	public void setDataDevolucaoPrevista(LocalDate dataDevolucaoPrevista) {
@@ -60,38 +65,55 @@ public class Emprestimo {
 	}
 
 	public StatusEmprestimo getStatusEmprestimo() {
-		return statusEmprestimo;
+		if (this.verificarAtraso()) {
+
+			this.statusEmprestimo = statusEmprestimo.ATRASADO;
+		}
+		return this.statusEmprestimo;
 	}
 
-	public void setStatusEmprestimo(StatusEmprestimo statusEmprestimo) {
-		this.statusEmprestimo = statusEmprestimo;
-	}
 
-	public int verificarAtraso() {
+	public boolean verificarAtraso() {
 		Duration duration = Duration.between(dataDevolucaoPrevista.atStartOfDay(), LocalDate.now().atStartOfDay());
 		int dias = (int) duration.toDays();
-		boolean atraso = false;
-		if (dias >= 1) {
-			atraso = true;
-		}
-		return dias;
+
+		return dias >= 1;
 	}
 
 	public void realizarEmprestimo(Livro livro) {
-		livrosEmprestados.add(livro);
-	}
+		try {
+			if (cliente.podeRealizarEmprestimo()) {
+				if (!livro.diminuirEstoque()) {
+					this.livrosEmprestados.add(livro);
+					this.statusEmprestimo = statusEmprestimo.ATIVO;
 
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("Nome do cliente: " + cliente.getNome() + " | Numero de identificacao: "
-				+ cliente.getnumeroDeIdentificacao() + " | Contato: " + cliente.getContato() + "\n\n");
-		for (Livro emprestimos : livrosEmprestados) {
-			sb.append("Titulo do livro: " + emprestimos.getTitulo() + " | ");
-			sb.append("Autor do livro: " + emprestimos.getAutor() + " | ");
-			sb.append("Data de retirada: " + getDataRetirada() + " | ");
-			sb.append("Data da devolucao: " + this.getDataDevolucaoPrevista() + " |\n");
+					// Adiciona este empréstimo à lista de empréstimos ativos do cliente
+					this.cliente.adicionarEmprestimo(this);
+				}
+
+			} else {
+				throw new IllegalArgumentException(
+						cliente.getNome() + " já tem 3 empréstimos ativos. Operação não permitida.");
+			}
+
+		} catch (IllegalArgumentException e) {
+			System.out.println(e.getMessage());
 		}
 
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Empréstimo do cliente: " + cliente.getNome() + "\n");
+		sb.append("Data de Retirada: " + dataRetirada + "\n");
+		sb.append("Data Prevista de Devolução: " + getDataDevolucaoPrevista() + "\n");
+		sb.append("Status: " + getStatusEmprestimo() + "\n");
+		sb.append("Livros emprestados:\n");
+		for (Livro livro : livrosEmprestados) {
+			sb.append(" - Título: " + livro.getTitulo() + " | Autor: " + livro.getAutor() + "\n");
+		}
 		return sb.toString();
 	}
+
 }
