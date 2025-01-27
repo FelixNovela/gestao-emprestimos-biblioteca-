@@ -14,19 +14,11 @@ public class Program {
 		List<Livro> livros = new ArrayList<>();
 		List<Cliente> clientes = new ArrayList<>();
 
-		Duration duration = Duration.between( LocalDate.parse("2025-01-25").atStartOfDay(), LocalDate.now().atStartOfDay());
-		int dias = (int) duration.toDays();
-		System.out.println(dias);
 		// Criar livros
 		livros.add(new Livro(110, "Naruto", "Naruto", LocalDate.parse("2000-02-20"), 2));
 		livros.add(new Livro(111, "Boruto", "Boruto", LocalDate.parse("2000-02-20"), 4));
 		livros.add(new Livro(112, "Bleach", "Ichigo", LocalDate.parse("2000-02-20"), 6));
 
-		/*System.out.println("LIVROS DISPONIVEIS");
-		for (Livro list : livros) {
-			System.out.println(list);
-		}
-		System.out.println();*/
 		// Criar clientes
 		Cliente cliente1 = new Cliente(102, "Paulo", "12938", "872910923");
 		Cliente cliente2 = new Cliente(120, "Kira", "0192", "822910923");
@@ -35,18 +27,24 @@ public class Program {
 		clientes.add(cliente1);
 		clientes.add(cliente2);
 		clientes.add(cliente3);
+		
+		System.out.println("LISTA DE LIVROS");
+		for(Livro lista : livros) {
+			System.out.println(lista);
+		}
+		
+		System.out.println();
+		System.out.println("-------------------------------------------------------------------------------------------------------");
+		
 		// Realizar empréstimos
 		try {
 			System.out.println("REALIZAR EMPRESTIMOS");
 			System.out.println();
-			new Emprestimo(1, cliente1, livros.get(0), LocalDate.parse("2025-01-15"), LocalDate.parse("2025-01-16"));
-			new Emprestimo(2, cliente1, livros.get(1), LocalDate.now(), LocalDate.now().plusDays(7));
-			new Emprestimo(3, cliente2, livros.get(2), LocalDate.parse("2025-01-15"), LocalDate.now());
-			// Tenta adicionar o 4º empréstimo (deve falhar)
-			new Emprestimo(4, cliente1, livros.get(0), LocalDate.now(), LocalDate.now().plusDays(9));
-			
-			new Emprestimo(4, cliente3, livros.get(0), LocalDate.now(), LocalDate.now().plusDays(9));
-			new Emprestimo(4, cliente3, livros.get(1), LocalDate.parse("2025-01-15"), LocalDate.now());
+			new Emprestimo(1, cliente1, LocalDate.parse("2025-01-15"), LocalDate.parse("2025-01-16")).realizarEmprestimo(new Livro[] {livros.get(1),livros.get(2)});
+			new Emprestimo(2, cliente1, LocalDate.now(), LocalDate.now().plusDays(7)).realizarEmprestimo(new Livro[] {livros.get(0),livros.get(2)});
+			new Emprestimo(3, cliente2, LocalDate.parse("2025-01-15"), LocalDate.parse("2025-01-16")).realizarEmprestimo(new Livro[] {livros.get(2),livros.get(0)});
+
+			new Emprestimo(4, cliente3, LocalDate.now(), LocalDate.now().plusDays(9)).realizarEmprestimo(new Livro[] {livros.get(0),livros.get(1)});;
 
 		} catch (IllegalArgumentException e) {
 			System.out.println(e.getMessage());
@@ -57,17 +55,20 @@ public class Program {
 		for (Cliente cliente : clientes) {
 			System.out.println(cliente);
 		}
+
 		System.out.println();
 		System.out.println("LISTA DE EMPRESTIMOS:");
 		for (Cliente cliente : clientes) {
 
 			System.out.println(cliente.listarEmprestimos());
 		}
+		
 
-		System.out.println("LIVROS DISPONIVEIS");
-		for (Livro list : livros) {
-			System.out.println(list);
+		System.out.println("LISTA DE LIVROS");
+		for(Livro lista : livros) {
+			System.out.println(lista);
 		}
+		
 
 	}
 

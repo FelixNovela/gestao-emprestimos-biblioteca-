@@ -3,12 +3,14 @@ package entities;
 import java.util.ArrayList;
 import java.util.List;
 
+import entities.enums.StatusEmprestimo;
+
 public class Cliente {
 
 	private int id;
 	private String nome;
 	private String numeroDeIdentificacao;
-	private String contato; 
+	private String contato;
 
 	private List<Emprestimo> emprestimosAtivos = new ArrayList<>();
 
@@ -21,9 +23,6 @@ public class Cliente {
 		this.nome = nome;
 		this.numeroDeIdentificacao = numeroDeIdentificacao;
 		this.contato = contato;
-	}
-	public boolean podeRealizarEmprestimo() {
-	    return emprestimosAtivos.size() < 3; // Retorna true se o cliente tiver menos de 3 empréstimos ativos
 	}
 
 	public int getId() {
@@ -50,15 +49,6 @@ public class Cliente {
 		this.contato = contato;
 	}
 
-    
-    public String listarEmprestimos() {
-        StringBuilder sb = new StringBuilder();
-        for (Emprestimo emprestimo : emprestimosAtivos) {
-            sb.append(emprestimo.toString()).append("\n");
-        }
-        return sb.toString();
-    }
-
 	public List<Emprestimo> getEmprestimosAtivos() {
 		return emprestimosAtivos;
 	}
@@ -68,14 +58,33 @@ public class Cliente {
 	}
 
 	public void removerEmprestimo(Emprestimo emprestimo) {
-		emprestimosAtivos.remove(emprestimo);
+		emprestimo.setStatusEmprestimo(StatusEmprestimo.DEVOLVIDO);
+		emprestimo.getLivrosEmprestados().get(0).aumentarEstoque(1);
+	}
+
+	public String listarEmprestimos() {
+		StringBuilder sb = new StringBuilder();
+		for (Emprestimo emprestimo : emprestimosAtivos) {
+			sb.append(emprestimo.toString()).append("\n");
+		}
+		return sb.toString();
+	}
+
+	public int verificarQuantidadeDeLivros() {
+		int totalLivros = 0;
+		for (Emprestimo emp : emprestimosAtivos) {
+			totalLivros += emp.getLivrosEmprestados().size();
+		}
+		return totalLivros;
 	}
 
 	@Override
 	public String toString() {
-	    return "Cliente: " + nome + 
-	           " | ID: " + numeroDeIdentificacao + 
-	           " | Contato: " + contato + 
-	           " | Empréstimos ativos: " + emprestimosAtivos.size();
+		int totalLivros = 0;
+		for (Emprestimo emp : emprestimosAtivos) {
+			totalLivros += emp.getLivrosEmprestados().size();
+		}
+		return "Cliente: " + nome + " | ID: " + numeroDeIdentificacao + " | Contato: " + contato
+				+ " | Empréstimos ativos: " + totalLivros;
 	}
 }

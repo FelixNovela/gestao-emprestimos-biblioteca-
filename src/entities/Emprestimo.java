@@ -20,14 +20,13 @@ public class Emprestimo {
 
 	}
 
-	public Emprestimo(int id, Cliente cliente, Livro livro, LocalDate dataRetirada, LocalDate dataDevolucaoPrevista) {
+	public Emprestimo(int id, Cliente cliente, LocalDate dataRetirada, LocalDate dataDevolucaoPrevista) {
 
 		this.id = id;
 		this.cliente = cliente;
 		this.dataRetirada = dataRetirada;
 		this.dataDevolucaoPrevista = dataDevolucaoPrevista;
-		this.statusEmprestimo = statusEmprestimo.ATIVO;
-		this.realizarEmprestimo(livro);
+		// this.realizarEmprestimo(livro);
 
 	}
 
@@ -65,13 +64,16 @@ public class Emprestimo {
 	}
 
 	public StatusEmprestimo getStatusEmprestimo() {
-		if (this.verificarAtraso()) {
+		if (this.verificarAtraso() && this.statusEmprestimo != this.statusEmprestimo.DEVOLVIDO) {
 
 			this.statusEmprestimo = statusEmprestimo.ATRASADO;
 		}
 		return this.statusEmprestimo;
 	}
 
+	public void setStatusEmprestimo(StatusEmprestimo statusEmprestimo) {
+		this.statusEmprestimo = statusEmprestimo;
+	}
 
 	public boolean verificarAtraso() {
 		Duration duration = Duration.between(dataDevolucaoPrevista.atStartOfDay(), LocalDate.now().atStartOfDay());
@@ -80,25 +82,33 @@ public class Emprestimo {
 		return dias >= 1;
 	}
 
-	public void realizarEmprestimo(Livro livro) {
+	public void realizarEmprestimo(Livro[] livro) {
 		try {
-			if (cliente.podeRealizarEmprestimo()) {
-				if (!livro.diminuirEstoque()) {
-					this.livrosEmprestados.add(livro);
-					this.statusEmprestimo = statusEmprestimo.ATIVO;
 
-					// Adiciona este empréstimo à lista de empréstimos ativos do cliente
-					this.cliente.adicionarEmprestimo(this);
+			if (livro.length < 3 && (livro.length + cliente.verificarQuantidadeDeLivros() <= 3)) {
+				for (int i = 0; i < livro.length; i++) {
+					if (!livro[i].diminuirEstoque()) {
+						this.livrosEmprestados.add(livro[i]);
+					}
 				}
+				this.statusEmprestimo = statusEmprestimo.ATIVO;
+
+				this.cliente.adicionarEmprestimo(this);
 
 			} else {
 				throw new IllegalArgumentException(
-						cliente.getNome() + " já tem 3 empréstimos ativos. Operação não permitida.");
+						cliente.getNome() + ": Emprestimo não permitido. Nao pode ter mais de  3 livros em empréstimos ativos.");
 			}
 
 		} catch (IllegalArgumentException e) {
 			System.out.println(e.getMessage());
 		}
+
+	}
+
+	public void finalizarEmprestimo() {
+
+		cliente.removerEmprestimo(this);
 
 	}
 
