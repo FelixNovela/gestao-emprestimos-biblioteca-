@@ -8,7 +8,7 @@ public class Livro {
 	private String autor;
 	private LocalDate DateanoPublicacao;
 	private int estoque;
-
+	private int totalEmprestado;
 	public Livro() {
 
 	}
@@ -56,12 +56,22 @@ public class Livro {
 		DateanoPublicacao = dateanoPublicacao;
 	}
 
+	
+	public int getTotalEmprestado() {
+		return totalEmprestado;
+	}
+
+	public void setTotalEmprestado(int totalEmprestado) {
+		this.totalEmprestado -= totalEmprestado;
+	}
+
 	public int getEstoque() {
 		return estoque;
 	}
 
 	public void aumentarEstoque(int quantidade) {
 		this.estoque += quantidade;
+		
 	}
 
 	public boolean diminuirEstoque() {
@@ -71,6 +81,7 @@ public class Livro {
 			resp = true;
 		} else {
 			this.estoque -= 1;
+			this.totalEmprestado += 1;
 			
 		}
 		return resp;
@@ -84,6 +95,7 @@ public class Livro {
 		sb.append("Autor: "+autor + " | ");
 		sb.append("Data de Publicacao: "+DateanoPublicacao + " | ");
 		sb.append("Quantidade no estoque: " +estoque + " | ");
+		sb.append("Total emprestados.: " +this.getTotalEmprestado() + " | ");
 
 		return sb.toString();
 	}

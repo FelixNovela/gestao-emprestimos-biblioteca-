@@ -2,12 +2,13 @@ package entities;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import entities.enums.StatusEmprestimo;
 
 public class Cliente {
 
-	private int id;
+	private String id;
 	private String nome;
 	private String numeroDeIdentificacao;
 	private String contato;
@@ -18,15 +19,22 @@ public class Cliente {
 
 	}
 
-	public Cliente(int id, String nome, String numeroDeIdentificacao, String contato) {
-		this.id = id;
+	public Cliente(String nome, String numeroDeIdentificacao, String contato) {
+		this.id = gerarIdUnico(nome);
 		this.nome = nome;
 		this.numeroDeIdentificacao = numeroDeIdentificacao;
 		this.contato = contato;
 	}
 
-	public int getId() {
+	public String getId() {
 		return id;
+	}
+
+	private String gerarIdUnico(String nome) {
+		Random random = new Random();
+		int numeros = random.nextInt(900) + 100;
+		char inicial = Character.toUpperCase(nome.charAt(0));
+		return numeros + "" + inicial;
 	}
 
 	public String getNome() {
@@ -59,7 +67,12 @@ public class Cliente {
 
 	public void removerEmprestimo(Emprestimo emprestimo) {
 		emprestimo.setStatusEmprestimo(StatusEmprestimo.DEVOLVIDO);
-		emprestimo.getLivrosEmprestados().get(0).aumentarEstoque(1);
+		for (int i = 0; i < emprestimo.getLivrosEmprestados().size(); i++) {
+			emprestimo.getLivrosEmprestados().get(i).aumentarEstoque(1);
+			emprestimo.getLivrosEmprestados().get(i).setTotalEmprestado(1);
+
+		}
+		System.out.println(this.getNome() + " Finalizou o emprestimo: \n" + emprestimo.toString() +(emprestimo.verificarAtraso() ? " ATRASO NA DEVOLUCAO \n ": "\n"));
 	}
 
 	public String listarEmprestimos() {
@@ -80,11 +93,7 @@ public class Cliente {
 
 	@Override
 	public String toString() {
-		int totalLivros = 0;
-		for (Emprestimo emp : emprestimosAtivos) {
-			totalLivros += emp.getLivrosEmprestados().size();
-		}
-		return "Cliente: " + nome + " | ID: " + numeroDeIdentificacao + " | Contato: " + contato
-				+ " | Empréstimos ativos: " + totalLivros;
+		return "ID: " + id +" | Cliente: " + nome + " | Numero De Identificacao: " + numeroDeIdentificacao + " | Contato: " + contato
+				+ " | Empréstimos ativos: " + emprestimosAtivos.size();
 	}
 }

@@ -26,7 +26,7 @@ public class Emprestimo {
 		this.cliente = cliente;
 		this.dataRetirada = dataRetirada;
 		this.dataDevolucaoPrevista = dataDevolucaoPrevista;
-		// this.realizarEmprestimo(livro);
+		
 
 	}
 
@@ -89,13 +89,15 @@ public class Emprestimo {
 				for (int i = 0; i < livro.length; i++) {
 					if (!livro[i].diminuirEstoque()) {
 						this.livrosEmprestados.add(livro[i]);
-					}
+					} 
 				}
 				this.statusEmprestimo = statusEmprestimo.ATIVO;
 
 				this.cliente.adicionarEmprestimo(this);
+				System.out.println(cliente.getNome() + ", reslizou um emprestimo. Total: "+livro.length + (livro.length > 1 ? " livros emprestados" : " livro emprestado"));
+				System.out.println();
 
-			} else {
+			} else { 
 				throw new IllegalArgumentException(
 						cliente.getNome() + ": Emprestimo não permitido. Nao pode ter mais de  3 livros em empréstimos ativos.");
 			}
@@ -107,7 +109,7 @@ public class Emprestimo {
 	}
 
 	public void finalizarEmprestimo() {
-
+		
 		cliente.removerEmprestimo(this);
 
 	}
@@ -123,6 +125,7 @@ public class Emprestimo {
 		for (Livro livro : livrosEmprestados) {
 			sb.append(" - Título: " + livro.getTitulo() + " | Autor: " + livro.getAutor() + "\n");
 		}
+		
 		return sb.toString();
 	}
 
